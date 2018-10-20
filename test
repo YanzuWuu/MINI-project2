@@ -1,0 +1,134 @@
+
+import os
+import numpy as np
+import tensorflow as tf
+import input_data
+import model
+
+
+
+N_CLASSES = 2
+IMG_W = 208  # resize the image, if the input image is too large, training will be very slow.
+IMG_H = 208
+BATCH_SIZE = 16
+CAPACITY = 512
+MAX_STEP = 1217 # with current parameters, it is suggested to use MAX_STEP>10k
+learning_rate = 0.0001 # with current parameters, it is suggested to use learning rate<0.0001
+
+
+from PIL import Image
+import matplotlib.pyplot as plt
+plt.ion()
+def get_one_image(train):
+   '''Randomly pick one image from training data
+   Return: ndarray
+   '''
+   n = len(train)
+   ind = np.random.randint(0, n)
+   img_dir = train[ind]
+
+   image = Image.open(img_dir)
+   plt.imshow(image)
+   plt.show()
+   image = image.resize([208, 208])
+   image = np.array(image)
+   return image
+
+def evaluate_one_image():
+   '''Test one image against the saved models and parameters
+   '''
+
+
+   train_dir = '/Users/y/Downloads/rose&sunflower/train/'
+   train, train_label = input_data.get_files(train_dir)
+   image_array = get_one_image(train)
+
+   with tf.Graph().as_default():
+       BATCH_SIZE = 1
+       N_CLASSES = 2
+
+       image = tf.cast(image_array, tf.float32)
+       image = tf.image.per_image_standardization(image)
+       image = tf.reshape(image, [1, 208, 208, 3])
+       logit = model.inference(image, BATCH_SIZE, N_CLASSES)
+
+       logit = tf.nn.softmax(logit)
+
+       x = tf.placeholder(tf.float32, shape=[208, 208, 3])
+
+
+       logs_train_dir = '/Users/y/Downloads/rose&sunflower/logs/train/'
+
+       saver = tf.train.Saver()
+
+       with tf.Session() as sess:
+
+           print("Reading checkpoints...")
+           ckpt = tf.train.get_checkpoint_state(logs_train_dir)
+           if ckpt and ckpt.model_checkpoint_path:
+               global_step = ckpt.model_checkpoint_path.split('/')[-1].split('-')[-1]
+               saver.restore(sess, ckpt.model_checkpoint_path)
+               print('Loading success, global_step is %s' % global_step)
+           else:
+               print('No checkpoint file found')
+
+           prediction = sess.run(logit, feed_dict={x: image_array})
+           max_index = np.argmax(prediction)
+           if max_index==0:
+               print('This is a rose with possibility %.6f' %prediction[:, 0])
+           else:
+               print('This is a sunflower with possibility %.6f' %prediction[:, 1])
+
+def evaluate_all_image():
+    '''
+	Test all image against the saved models and parameters.
+	Return global accuracy of test_image_set
+	##############################################
+	##Notice that test image must has label to compare the prediction and real
+	##############################################
+	'''
+
+    test_dir = '/Users/y/Downloads/rose&sunflower/test/'
+    N_CLASSES = 2
+    print('-------------------------')
+    test, test_label = input_data.get_files(test_dir)
+    BATCH_SIZE = len(test)
+    print('There are %d test images totally..' % BATCH_SIZE)
+    print('-------------------------')
+    test_batch, test_label_batch = input_data.get_batch(test,
+                                                          test_label,
+                                                          IMG_W,
+                                                          IMG_H,
+                                                          BATCH_SIZE, 
+                                                          CAPACITY)
+	
+    logits = model.inference(test_batch, BATCH_SIZE, N_CLASSES)
+    testloss = model.losses(logits, test_label_batch) 
+    testacc = model.evaluation(logits, test_label_batch)
+	
+    logs_train_dir = '/Users/y/Downloads/rose&sunflower/logs/train/'
+    saver = tf.train.Saver()
+        
+    with tf.Session() as sess:
+        print("Reading checkpoints...")
+        ckpt = tf.train.get_checkpoint_state(logs_train_dir)
+        if ckpt and ckpt.model_checkpoint_path:
+            global_step = ckpt.model_checkpoint_path.split('/')[-1].split('-')[-1]
+            saver.restore(sess, ckpt.model_checkpoint_path)
+            print('Loading success, global_step is %s' % global_step)
+        else:
+            print('No checkpoint file found')
+        print('-------------------------')        
+        coord = tf.train.Coordinator()
+        threads = tf.train.start_queue_runners(sess=sess, coord=coord)
+        test_loss,test_acc = sess.run([testloss,testacc])
+        print('The model\'s loss is %.2f' %test_loss)
+        correct = int(BATCH_SIZE*test_acc)
+        print('Correct : %d' % correct)
+        print('Wrong : %d' % (BATCH_SIZE - correct))
+        print('The accuracy in test images are %.2f%%' %(test_acc*100.0))
+    coord.request_stop()
+    coord.join(threads)
+    sess.close()
+#evaluate_one_image()
+#evaluate_all_image()

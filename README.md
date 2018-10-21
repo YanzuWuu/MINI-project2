@@ -9,5 +9,5 @@ After training the model, I used AutoML Vision as a benchmark, and the result is
 ![test_result](test_result.png)
 
 ![AutoML_result](AutoML_result.png)
-![Auto_rose](Auto_rose.png)
-![AutoML_sunflowers](AutoML_sunflowers.png)
+![AutoML1](AutoML1.png)
+![AutoML2](AutoML2.png)

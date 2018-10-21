@@ -1,4 +1,4 @@
-The trained model's files is here, however, github can only submit files smaller than 25Mb, so some data files cannot be submitted. If the trained model doesn't work without those file, don'e hesitate to connect me by email, I'll send u them.
+The trained model's files is here, however, github can only submit files smaller than 25Mb, so some data files cannot be submitted. If the trained model doesn't work without those files, don'e hesitate to connect me by email, I'll send u them.
 
 My eamil address is yczhu1@bu.edu.
 

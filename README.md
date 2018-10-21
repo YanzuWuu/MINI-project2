@@ -8,6 +8,6 @@ After training the model, I used AutoML Vision as a benchmark, and the result is
 ![train_result](train_result.png)
 ![test_result](test_result.png)
 
-![AutoML_result](AutoML_result.png)
-![AutoML1](AutoML1.png)
-![AutoML2](AutoML2.png)
+![autoML_result](autoML_result.png)
+![autoML1](autoML1.png)
+![autoML2](autoML2.png)

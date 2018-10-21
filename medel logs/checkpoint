@@ -1,0 +1,5 @@
+model_checkpoint_path: "/Users/y/Downloads/rose&sunflower/logs/train/model.ckpt-1216"
+all_model_checkpoint_paths: "/Users/y/Downloads/rose&sunflower/logs/train/model.ckpt-0"
+all_model_checkpoint_paths: "/Users/y/Downloads/rose&sunflower/logs/train/model.ckpt-500"
+all_model_checkpoint_paths: "/Users/y/Downloads/rose&sunflower/logs/train/model.ckpt-1000"
+all_model_checkpoint_paths: "/Users/y/Downloads/rose&sunflower/logs/train/model.ckpt-1216"

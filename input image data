@@ -9,12 +9,7 @@ import os
 train_dir = '/Users/y/Downloads/rose&sunflower/train/'
 
 def get_files(file_dir):
-    '''
-    Args:
-        file_dir: file directory
-    Returns:
-        list of images and labels
-    '''
+
     roses = []
     label_roses = []
     sunflowers = []
@@ -44,34 +39,21 @@ def get_files(file_dir):
     return image_list, label_list
 
 
-#%%
+
 
 def get_batch(image, label, image_W, image_H, batch_size, capacity):
-    '''
-    Args:
-        image: list type
-        label: list type
-        image_W: image width
-        image_H: image height
-        batch_size: batch size
-        capacity: the maximum elements in queue
-    Returns:
-        image_batch: 4D tensor [batch_size, width, height, 3], dtype=tf.float32
-        label_batch: 1D tensor [batch_size], dtype=tf.int32
-    '''
+
 
     image = tf.cast(image, tf.string)
     label = tf.cast(label, tf.int32)
 
-    # make an input queue
+#the input queue
     input_queue = tf.train.slice_input_producer([image, label])
     label = input_queue[1]
     image_contents = tf.read_file(input_queue[0])
     image = tf.image.decode_jpeg(image_contents, channels=3)
 
-    ######################################
-    # data argumentation should go to here
-    ######################################
+#resize the image
 
     image = tf.image.resize_image_with_crop_or_pad(image, image_W, image_H)
 
@@ -90,21 +72,20 @@ def get_batch(image, label, image_W, image_H, batch_size, capacity):
 
     return image_batch, label_batch
 
+'''
+test if we can get the queue and output the image
+the plt.imshow() cannot show the image directly, so I added a sentence plt.show() after it.
+the problem is the image need to be closed so that the process can be continue
+'''
 
-
-# TEST
-#To test the generated batches of images
-#When training the model, DO comment the following codes
-
-#
 # import matplotlib.pyplot as plt
-#
+# train_dir = '/Users/y/Downloads/rose&sunflower/train/'
+
 # BATCH_SIZE = 10
 # CAPACITY = 256
 # IMG_W = 208
 # IMG_H = 208
 #
-# train_dir = '/Users/y/Downloads/rose&sunflower/train/'
 #
 # image_list, label_list = get_files(train_dir)
 # image_batch, label_batch = get_batch(image_list, label_list, IMG_W, IMG_H, BATCH_SIZE, CAPACITY)
